@@ -12,11 +12,12 @@ import java.time.LocalDate;
 public class NewsResponse {
     private Integer id;
     private String seo_id;
+    private SeoResponse seo;
     private String title;
     private String content;
     private Integer category_new_id;
     private CategoryResponse category;
     private LocalDate created_at;
     private String cover_url;
-    private Boolean is_highlights;
+    private Integer is_highlights;
 }

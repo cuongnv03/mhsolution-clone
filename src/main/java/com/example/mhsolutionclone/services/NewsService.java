@@ -2,12 +2,16 @@ package com.example.mhsolutionclone.services;
 
 import com.example.mhsolution.mhsolutionclone.jooq.tables.pojos.Categories;
 import com.example.mhsolution.mhsolutionclone.jooq.tables.pojos.News;
+import com.example.mhsolution.mhsolutionclone.jooq.tables.pojos.Seo;
 import com.example.mhsolutionclone.data.mapper.NewsMapper;
+import com.example.mhsolutionclone.data.mapper.SeoMapper;
 import com.example.mhsolutionclone.data.request.SearchFilter;
 import com.example.mhsolutionclone.data.response.CategoryResponse;
 import com.example.mhsolutionclone.data.response.NewsResponse;
 import com.example.mhsolutionclone.data.response.PaginatedResponse;
+import com.example.mhsolutionclone.data.response.SeoResponse;
 import com.example.mhsolutionclone.repositories.NewsRepository;
+import com.example.mhsolutionclone.repositories.SeoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +24,8 @@ public class NewsService {
 
     private final NewsRepository newsRepository;
     private final NewsMapper newsMapper;
+    private final SeoMapper seoMapper;
+    private final SeoRepository seoRepository;
 
     public List<NewsResponse> getNews() {
         List<News> newsList = newsRepository.findAll();
@@ -28,9 +34,10 @@ public class NewsService {
                     Categories category = newsRepository.findCategoryById(news.getCategoryNewId())
                             .orElse(null);
                     CategoryResponse categoryResponse = category == null ? null : newsMapper.toCategoryResponse(category);
-                    assert categoryResponse != null;
-                    news.setCategoryNewId(categoryResponse.getId());
-                    return newsMapper.toNewsResponse(news, categoryResponse);
+                    Seo seo = seoRepository.findById(news.getSeoId())
+                            .orElse(null);
+                    SeoResponse seoResponse = seo == null ? null : seoMapper.toSeoResponse(seo);
+                    return newsMapper.toNewsResponse(news, seoResponse, categoryResponse);
                 })
                 .collect(Collectors.toList());
     }
@@ -52,7 +59,10 @@ public class NewsService {
                     Categories category = newsRepository.findCategoryById(news.getCategoryNewId())
                             .orElse(null);
                     CategoryResponse categoryResponse = category == null ? null : newsMapper.toCategoryResponse(category);
-                    return newsMapper.toNewsResponse(news, categoryResponse);
+                    Seo seo = seoRepository.findById(news.getSeoId())
+                            .orElse(null);
+                    SeoResponse seoResponse = seo == null ? null : seoMapper.toSeoResponse(seo);
+                    return newsMapper.toNewsResponse(news, seoResponse, categoryResponse);
                 })
                 .collect(Collectors.toList());
 
@@ -64,7 +74,10 @@ public class NewsService {
         Categories category = newsRepository.findCategoryById(news.getCategoryNewId())
                 .orElse(null);
         CategoryResponse categoryResponse = category == null ? null : newsMapper.toCategoryResponse(category);
-        return newsMapper.toNewsResponse(news, categoryResponse);
+        Seo seo = seoRepository.findById(news.getSeoId())
+                .orElse(null);
+        SeoResponse seoResponse = seo == null ? null : seoMapper.toSeoResponse(seo);
+        return newsMapper.toNewsResponse(news, seoResponse, categoryResponse);
     }
 }
 

@@ -1,8 +1,6 @@
 package com.example.mhsolutionclone.repositories;
 
 import com.example.mhsolution.mhsolutionclone.jooq.Tables;
-import com.example.mhsolution.mhsolutionclone.jooq.tables.pojos.ProductContents;
-import com.example.mhsolution.mhsolutionclone.jooq.tables.pojos.ProductInfos;
 import com.example.mhsolution.mhsolutionclone.jooq.tables.pojos.Products;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
@@ -25,18 +23,6 @@ public class ProductRepository {
         return dsl.selectFrom(Tables.PRODUCTS)
                 .where(Tables.PRODUCTS.SEO_ID.eq(seoId))
                 .fetchOneInto(Products.class);
-    }
-
-    public List<ProductContents> findContentsByProductId(int productId) {
-        return dsl.selectFrom(Tables.PRODUCT_CONTENTS)
-                .where(Tables.PRODUCT_CONTENTS.PRODUCT_ID.eq(productId))
-                .fetchInto(ProductContents.class);
-    }
-
-    public List<ProductInfos> findInfosByProductId(int productId) {
-        return dsl.selectFrom(Tables.PRODUCT_INFOS)
-                .where(Tables.PRODUCT_INFOS.PRODUCT_ID.eq(productId))
-                .fetchInto(ProductInfos.class);
     }
 }
 

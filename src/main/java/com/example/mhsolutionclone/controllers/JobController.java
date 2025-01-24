@@ -12,18 +12,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/jobs")
 @RequiredArgsConstructor
 public class JobController {
     private final JobService jobService;
 
-    @GetMapping("/jobs")
+    @GetMapping
     public ResponseEntity<List<JobResponse>> getJobs() {
         List<JobResponse> response = jobService.getJobs();
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/jobs")
+    @PostMapping
     public ResponseEntity<PaginatedResponse<JobResponse>> searchJobs(
             @Valid @RequestBody(required = false) List<SearchFilter> filters,
             @RequestParam(value = "page", defaultValue = "1") int page,
@@ -32,7 +32,7 @@ public class JobController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/jobs/{seoId}")
+    @GetMapping("/{seoId}")
     public ResponseEntity<JobResponse> getJobBySeoId(@PathVariable String seoId) {
         JobResponse response = jobService.getJobBySeoId(seoId);
         return ResponseEntity.ok(response);

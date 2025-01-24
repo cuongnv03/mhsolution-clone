@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FooterSocialResponse {
+public class ContactSocialResponse {
     private String type;
     private String src;
 }

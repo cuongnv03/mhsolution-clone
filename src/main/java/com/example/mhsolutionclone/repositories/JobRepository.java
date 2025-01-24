@@ -1,17 +1,20 @@
 package com.example.mhsolutionclone.repositories;
 
 import com.example.mhsolution.mhsolutionclone.jooq.Tables;
-import com.example.mhsolution.mhsolutionclone.jooq.tables.pojos.JobInfos;
 import com.example.mhsolution.mhsolutionclone.jooq.tables.pojos.Jobs;
 import com.example.mhsolutionclone.data.request.SearchFilter;
 import lombok.RequiredArgsConstructor;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jooq.Record;
+import org.jooq.Result;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -31,37 +34,28 @@ public class JobRepository {
                 .fetchOneInto(Jobs.class);
     }
 
-    public List<Jobs> searchAll(int page, int size) {
-        return dsl.selectFrom(Tables.JOBS)
+    public Map<List<Jobs>, Long> searchAll(int page, int size) {
+        var jobs = dsl.select(Tables.JOBS.asterisk(),
+                DSL.count().over().as("total_elements"))
+                .from(Tables.JOBS)
                 .orderBy(Tables.JOBS.END_TIME.desc())
                 .limit(size)
                 .offset((page - 1) * size)
-                .fetchInto(Jobs.class);
+                .fetch();
+        return Map.of(jobs.into(Jobs.class), jobs.getFirst().get("total_elements", Long.class));
     }
 
-    public long count() {
-        return dsl.fetchCount(Tables.JOBS);
-    }
-
-    public List<JobInfos> findInfosByJobId(int jobId) {
-        return dsl.selectFrom(Tables.JOB_INFOS)
-                .where(Tables.JOB_INFOS.JOB_ID.eq(jobId))
-                .fetchInto(JobInfos.class);
-    }
-
-    public List<Jobs> search(List<SearchFilter> filters, int page, int size) {
+    public Map<List<Jobs>, Long> search(List<SearchFilter> filters, int page, int size) {
         Condition condition = buildCondition(filters);
-        return dsl.selectFrom(Tables.JOBS)
+        var jobs = dsl.select(Tables.JOBS.asterisk(),
+                        DSL.count().over().as("total_elements"))
+                .from(Tables.JOBS)
                 .where(condition)
                 .orderBy(Tables.JOBS.END_TIME.desc())
                 .limit(size)
                 .offset((page - 1) * size)
-                .fetchInto(Jobs.class);
-    }
-
-    public long countSearch(List<SearchFilter> filters) {
-        Condition condition = buildCondition(filters); // Build jOOQ condition from filters
-        return dsl.fetchCount(dsl.selectFrom(Tables.JOBS).where(condition));
+                .fetch();
+        return Map.of(jobs.into(Jobs.class), jobs.getFirst().get("total_elements", Long.class));
     }
 
     // Xây dựng điều kiện tìm kiếm từ bộ lọc

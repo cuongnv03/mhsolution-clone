@@ -9,13 +9,13 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DataIntroductionResponse {
+public class IntroductionResponse {
     private Integer id;
     private String title;
     private String content;
-    private String cover_url;
     private List<VisionResponse> visions;
     private List<MissionResponse> missions;
     private List<CoreValueResponse> coreValues;
     private List<CompetitiveResponse> competitives;
+    private String cover_url;
 }

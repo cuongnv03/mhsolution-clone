@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/partners")
 @RequiredArgsConstructor
 public class PartnerController {
 
     private final PartnerService partnerService;
 
-    @GetMapping("/partners")
+    @GetMapping
     public ResponseEntity<List<PartnerResponse>> getAllPartners() {
         List<PartnerResponse> partners = partnerService.getAllPartners();
         return ResponseEntity.ok(partners);

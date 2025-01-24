@@ -9,12 +9,12 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FooterResponse {
+public class ContactResponse {
     private Integer id;
     private String seo_id;
     private String address;
     private String email;
     private String phone_number;
-    private List<FooterSocialResponse> socials;
+    private List<ContactSocialResponse> socials;
 }
 

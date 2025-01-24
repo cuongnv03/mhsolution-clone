@@ -12,19 +12,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/news")
 @RequiredArgsConstructor
 public class NewsController {
 
     private final NewsService newsService;
 
-    @GetMapping("/news")
+    @GetMapping
     public ResponseEntity<List<NewsResponse>> getNews() {
         List<NewsResponse> response = newsService.getNews();
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/news")
+    @PostMapping
     public ResponseEntity<PaginatedResponse<NewsResponse>> searchNews(
             @Valid @RequestBody(required = false) List<SearchFilter> filters,
             @RequestParam(value = "page", defaultValue = "1") int page,
@@ -33,10 +33,9 @@ public class NewsController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/news/{seo_id}")
+    @GetMapping("/{seo_id}")
     public ResponseEntity<NewsResponse> getNewsBySeoId(@PathVariable String seo_id) {
         NewsResponse response = newsService.getNewsBySeoId(seo_id);
         return ResponseEntity.ok(response);
     }
 }
-

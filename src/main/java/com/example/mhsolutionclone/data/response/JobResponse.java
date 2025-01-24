@@ -26,5 +26,5 @@ public class JobResponse {
     private Integer number_recruits;
     private LocalDateTime end_time;
     private String cover_url;
-    private List<JobInfoResponse> infos;
+    private List<JobInfoResponse> info;
 }

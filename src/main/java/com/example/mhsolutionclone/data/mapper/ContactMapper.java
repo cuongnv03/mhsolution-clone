@@ -1,9 +1,8 @@
 package com.example.mhsolutionclone.data.mapper;
 
-import com.example.mhsolution.mhsolutionclone.jooq.tables.pojos.Founders;
+import com.example.mhsolution.mhsolutionclone.jooq.tables.pojos.Contact;
+import com.example.mhsolutionclone.data.response.ContactResponse;
 import com.example.mhsolutionclone.data.response.ContactSocialResponse;
-import com.example.mhsolutionclone.data.response.FounderResponse;
-import com.example.mhsolutionclone.data.response.SocialResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.JSONB;
@@ -15,17 +14,17 @@ import java.util.Collections;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public interface FounderMapper {
+public interface ContactMapper {
     @Mapping(source = "seoId", target = "seo_id")
-    @Mapping(source = "jobTitle", target = "job_title")
+    @Mapping(source = "phoneNumber", target = "phone_number")
     @Mapping(source = "socials", target = "socials", qualifiedByName = "jsonToSocials")
-    FounderResponse toFounderResponse(Founders founder);
+    ContactResponse toContactResponse(Contact contact);
 
     @Named("jsonToSocials")
-    default List<SocialResponse> jsonToSocials(JSONB json) {
+    default List<ContactSocialResponse> jsonToSocials(JSONB json) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(json.data(), new TypeReference<List<SocialResponse>>() {});
+            return objectMapper.readValue(json.data(), new TypeReference<List<ContactSocialResponse>>() {});
         } catch (Exception e) {
             return Collections.emptyList();
         }

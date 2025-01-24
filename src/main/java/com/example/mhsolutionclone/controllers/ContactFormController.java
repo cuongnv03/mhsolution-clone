@@ -11,19 +11,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/contact-form")
 @RequiredArgsConstructor
 public class ContactFormController {
 
     private final ContactFormService contactFormService;
 
-    @PostMapping("/contact-forms")
+    @PostMapping
     public ResponseEntity<ContactFormResponse> submitContactForm(@Valid @RequestBody ContactFormRequest request) {
         ContactFormResponse response = contactFormService.submitContactForm(request);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/contact-forms")
+    @GetMapping
     public ResponseEntity<List<ContactFormResponse>> getAllContactForms() {
         List<ContactFormResponse> responses = contactFormService.getAllContactForms();
         return ResponseEntity.ok(responses);

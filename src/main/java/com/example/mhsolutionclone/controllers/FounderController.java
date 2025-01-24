@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/founders")
 @RequiredArgsConstructor
 public class FounderController {
 
     private final FounderService founderService;
 
-    @GetMapping("/founders")
+    @GetMapping
     public ResponseEntity<List<FounderResponse>> getAllFounders() {
         List<FounderResponse> founders = founderService.getAllFounders();
         return ResponseEntity.ok(founders);

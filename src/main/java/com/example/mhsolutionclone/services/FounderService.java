@@ -21,13 +21,7 @@ public class FounderService {
     public List<FounderResponse> getAllFounders() {
         List<Founders> founders = founderRepository.findAll();
         return founders.stream()
-                .map(founder -> {
-                    List<SocialResponse> socials = founderRepository.findSocialsByFounderId(founder.getId())
-                            .stream()
-                            .map(founderMapper::toSocialResponse)
-                            .collect(Collectors.toList());
-                    return founderMapper.toFounderResponse(founder, socials);
-                })
+                .map(founderMapper::toFounderResponse)
                 .collect(Collectors.toList());
     }
 }

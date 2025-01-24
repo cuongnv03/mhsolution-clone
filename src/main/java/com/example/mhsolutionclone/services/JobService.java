@@ -3,7 +3,6 @@ package com.example.mhsolutionclone.services;
 import com.example.mhsolution.mhsolutionclone.jooq.tables.pojos.Jobs;
 import com.example.mhsolutionclone.data.mapper.JobMapper;
 import com.example.mhsolutionclone.data.request.SearchFilter;
-import com.example.mhsolutionclone.data.response.JobInfoResponse;
 import com.example.mhsolutionclone.data.response.JobResponse;
 import com.example.mhsolutionclone.data.response.PaginatedResponse;
 import com.example.mhsolutionclone.repositories.JobRepository;
@@ -11,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,13 +23,7 @@ public class JobService {
     public List<JobResponse> getJobs() {
         List<Jobs> jobs = jobRepository.findAll();
         return jobs.stream()
-                .map(job -> {
-                    List<JobInfoResponse> infos = jobRepository.findInfosByJobId(job.getId())
-                            .stream()
-                            .map(jobMapper::toJobInfoResponse)
-                            .collect(Collectors.toList());
-                    return jobMapper.toJobResponse(job, infos);
-                })
+                .map(jobMapper::toJobResponse)
                 .collect(Collectors.toList());
     }
 
@@ -38,21 +32,17 @@ public class JobService {
         long totalElements;
 
         if (filters == null || filters.isEmpty()) {
-            jobs = jobRepository.searchAll(page, size);
-            totalElements = jobRepository.count();
+            Map<List<Jobs>, Long> result = jobRepository.searchAll(page, size);
+            jobs = result.keySet().iterator().next();
+            totalElements = result.values().iterator().next();
         } else {
-            jobs = jobRepository.search(filters, page, size);
-            totalElements = jobRepository.countSearch(filters);
+            Map<List<Jobs>, Long> result = jobRepository.search(filters, page, size);
+            jobs = result.keySet().iterator().next();
+            totalElements = result.values().iterator().next();
         }
 
         List<JobResponse> responses = jobs.stream()
-                .map(job -> {
-                    List<JobInfoResponse> infos = jobRepository.findInfosByJobId(job.getId())
-                            .stream()
-                            .map(jobMapper::toJobInfoResponse)
-                            .collect(Collectors.toList());
-                    return jobMapper.toJobResponse(job, infos);
-                })
+                .map(jobMapper::toJobResponse)
                 .collect(Collectors.toList());
 
         return new PaginatedResponse<>(totalElements, responses);
@@ -63,11 +53,7 @@ public class JobService {
         if (job == null) {
             throw new RuntimeException("Không tìm thấy công việc với seoId: " + seoId);
         }
-        List<JobInfoResponse> infos = jobRepository.findInfosByJobId(job.getId())
-                .stream()
-                .map(jobMapper::toJobInfoResponse)
-                .collect(Collectors.toList());
-        return jobMapper.toJobResponse(job, infos);
+        return jobMapper.toJobResponse(job);
     }
 }
 

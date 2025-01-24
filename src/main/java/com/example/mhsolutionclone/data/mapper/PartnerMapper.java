@@ -7,6 +7,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface PartnerMapper {
-    @Mapping(source = "partner.seoId", target = "seo_id")
+    @Mapping(source = "seoId", target = "seo_id")
     PartnerResponse toPartnerResponse(Partners partner);
 }
