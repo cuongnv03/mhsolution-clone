@@ -3,16 +3,15 @@ package com.example.mhsolutionclone.repositories;
 import com.example.mhsolution.mhsolutionclone.jooq.Tables;
 import com.example.mhsolution.mhsolutionclone.jooq.tables.pojos.Jobs;
 import com.example.mhsolutionclone.data.request.SearchFilter;
+import com.example.mhsolutionclone.data.request.SearchRequest;
+import com.example.mhsolutionclone.data.request.SearchSort;
 import lombok.RequiredArgsConstructor;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
-import org.jooq.Record;
-import org.jooq.Result;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -34,24 +33,45 @@ public class JobRepository {
                 .fetchOneInto(Jobs.class);
     }
 
-    public Map<List<Jobs>, Long> searchAll(int page, int size) {
+    public Map<List<Jobs>, Long> searchAll(SearchRequest searchRequest) {
+        int page = searchRequest.getPage();
+        int size = searchRequest.getLimit();
+        String sortProperty = searchRequest.getSorts().getProperty();
+        SearchSort.SortDirection sortDirection = searchRequest.getSorts().getDirection();
+
+        // No filters for searchAll
+        Condition condition = DSL.trueCondition(); // Will match all jobs (no filters)
+
         var jobs = dsl.select(Tables.JOBS.asterisk(),
-                DSL.count().over().as("total_elements"))
+                        DSL.count().over().as("total_elements"))
                 .from(Tables.JOBS)
-                .orderBy(Tables.JOBS.END_TIME.desc())
+                .where(condition)
+                .orderBy(
+                        sortDirection == SearchSort.SortDirection.ASC ?
+                                Tables.JOBS.field(sortProperty).asc() :
+                                Tables.JOBS.field(sortProperty).desc())
                 .limit(size)
                 .offset((page - 1) * size)
                 .fetch();
         return Map.of(jobs.into(Jobs.class), jobs.getFirst().get("total_elements", Long.class));
     }
 
-    public Map<List<Jobs>, Long> search(List<SearchFilter> filters, int page, int size) {
+    public Map<List<Jobs>, Long> search(SearchRequest searchRequest) {
+        List<SearchFilter> filters = searchRequest.getFilters();
+        int page = searchRequest.getPage();
+        int size = searchRequest.getLimit();
+        String sortProperty = searchRequest.getSorts().getProperty();
+        SearchSort.SortDirection sortDirection = searchRequest.getSorts().getDirection();
+
         Condition condition = buildCondition(filters);
         var jobs = dsl.select(Tables.JOBS.asterisk(),
                         DSL.count().over().as("total_elements"))
                 .from(Tables.JOBS)
                 .where(condition)
-                .orderBy(Tables.JOBS.END_TIME.desc())
+                .orderBy(
+                        sortDirection == SearchSort.SortDirection.ASC ?
+                                Tables.JOBS.field(sortProperty).asc() :
+                                Tables.JOBS.field(sortProperty).desc())
                 .limit(size)
                 .offset((page - 1) * size)
                 .fetch();
@@ -81,6 +101,7 @@ public class JobRepository {
 
         return switch (filter.getOperation()) {
             case "eq" -> field.eq(value);
+//            case "like_ignore_case" -> field.likeIgnoreCase(value.toString());  // Case-insensitive like operator
             default -> throw new IllegalArgumentException("Unsupported operator: " + filter.getOperation());
         };
     }

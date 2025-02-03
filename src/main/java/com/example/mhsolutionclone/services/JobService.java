@@ -3,6 +3,8 @@ package com.example.mhsolutionclone.services;
 import com.example.mhsolution.mhsolutionclone.jooq.tables.pojos.Jobs;
 import com.example.mhsolutionclone.data.mapper.JobMapper;
 import com.example.mhsolutionclone.data.request.SearchFilter;
+import com.example.mhsolutionclone.data.request.SearchRequest;
+import com.example.mhsolutionclone.data.request.SearchSort;
 import com.example.mhsolutionclone.data.response.JobResponse;
 import com.example.mhsolutionclone.data.response.PaginatedResponse;
 import com.example.mhsolutionclone.repositories.JobRepository;
@@ -27,16 +29,16 @@ public class JobService {
                 .collect(Collectors.toList());
     }
 
-    public PaginatedResponse<JobResponse> searchJobs(List<SearchFilter> filters, int page, int size) {
+    public PaginatedResponse<JobResponse> searchJobs(SearchRequest searchRequest) {
         List<Jobs> jobs;
         long totalElements;
 
-        if (filters == null || filters.isEmpty()) {
-            Map<List<Jobs>, Long> result = jobRepository.searchAll(page, size);
+        if (searchRequest.getFilters() == null || searchRequest.getFilters().isEmpty()) {
+            Map<List<Jobs>, Long> result = jobRepository.searchAll(searchRequest);
             jobs = result.keySet().iterator().next();
             totalElements = result.values().iterator().next();
         } else {
-            Map<List<Jobs>, Long> result = jobRepository.search(filters, page, size);
+            Map<List<Jobs>, Long> result = jobRepository.search(searchRequest);
             jobs = result.keySet().iterator().next();
             totalElements = result.values().iterator().next();
         }
@@ -56,4 +58,3 @@ public class JobService {
         return jobMapper.toJobResponse(job);
     }
 }
-
