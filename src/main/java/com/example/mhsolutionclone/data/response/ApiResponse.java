@@ -1,9 +1,17 @@
 package com.example.mhsolutionclone.data.response;
 
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ApiResponse<T> {
     private int code;
     private String message;
-    private List<T> result;
+    private T result;
+
 }

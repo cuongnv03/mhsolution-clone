@@ -30,17 +30,12 @@ public class JobService {
     }
 
     public PaginatedResponse<JobResponse> searchJobs(SearchRequest searchRequest) {
-        List<Jobs> jobs;
-        long totalElements;
+        Map<List<Jobs>, Long> result = jobRepository.search(searchRequest);
+        List<Jobs> jobs = result.keySet().iterator().next();
+        long totalElements = result.values().iterator().next();
 
-        if (searchRequest.getFilters() == null || searchRequest.getFilters().isEmpty()) {
-            Map<List<Jobs>, Long> result = jobRepository.searchAll(searchRequest);
-            jobs = result.keySet().iterator().next();
-            totalElements = result.values().iterator().next();
-        } else {
-            Map<List<Jobs>, Long> result = jobRepository.search(searchRequest);
-            jobs = result.keySet().iterator().next();
-            totalElements = result.values().iterator().next();
+        if (jobs.isEmpty()) {
+            throw new RuntimeException("Không tìm thấy công việc nào!");
         }
 
         List<JobResponse> responses = jobs.stream()

@@ -33,29 +33,6 @@ public class JobRepository {
                 .fetchOneInto(Jobs.class);
     }
 
-    public Map<List<Jobs>, Long> searchAll(SearchRequest searchRequest) {
-        int page = searchRequest.getPage();
-        int size = searchRequest.getLimit();
-        String sortProperty = searchRequest.getSorts().getProperty();
-        SearchSort.SortDirection sortDirection = searchRequest.getSorts().getDirection();
-
-        // No filters for searchAll
-        Condition condition = DSL.trueCondition(); // Will match all jobs (no filters)
-
-        var jobs = dsl.select(Tables.JOBS.asterisk(),
-                        DSL.count().over().as("total_elements"))
-                .from(Tables.JOBS)
-                .where(condition)
-                .orderBy(
-                        sortDirection == SearchSort.SortDirection.ASC ?
-                                Tables.JOBS.field(sortProperty).asc() :
-                                Tables.JOBS.field(sortProperty).desc())
-                .limit(size)
-                .offset((page - 1) * size)
-                .fetch();
-        return Map.of(jobs.into(Jobs.class), jobs.getFirst().get("total_elements", Long.class));
-    }
-
     public Map<List<Jobs>, Long> search(SearchRequest searchRequest) {
         List<SearchFilter> filters = searchRequest.getFilters();
         int page = searchRequest.getPage();
@@ -63,7 +40,8 @@ public class JobRepository {
         String sortProperty = searchRequest.getSorts().getProperty();
         SearchSort.SortDirection sortDirection = searchRequest.getSorts().getDirection();
 
-        Condition condition = buildCondition(filters);
+        // Use filters if available, otherwise build an empty condition
+        Condition condition = (filters == null || filters.isEmpty()) ? DSL.trueCondition() : buildCondition(filters);
         var jobs = dsl.select(Tables.JOBS.asterisk(),
                         DSL.count().over().as("total_elements"))
                 .from(Tables.JOBS)
